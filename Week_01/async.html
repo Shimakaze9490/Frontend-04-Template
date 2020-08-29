@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    div {
+      margin: 30px;
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      border-radius: 50px;
+      background-color: gray;
+    }
+    div.green.light {
+      background-color: green;
+    }
+    div.yellow.light {
+      background-color: yellow;
+    }
+    div.red.light {
+      background-color: red;
+    }
+  </style>
+</head>
+<style>
+
+</style>
+<body>
+  <div class='green'></div>
+  <div class='yellow'></div>
+  <div class='red'></div>
+
+  <button id='next'>next</button>
+</body>
+<script>
+  // 异步编程，经典范式。
+  // callBack; Promise; async/await
+  // js没有同步等待时间机制。（任务队列）
+  // Promise/A+
+  // async/await 是promise的封装
+
+  function green() {
+    var lights = document.getElementsByTagName('div');
+    for (var i = 0; i < 3; i++) lights[i].classList.remove('light');
+    document.getElementsByClassName('green')[0].classList.add('light');
+  }
+  function red() {
+    var lights = document.getElementsByTagName('div');
+    for (var i = 0; i < 3; i++) lights[i].classList.remove('light');
+    document.getElementsByClassName('red')[0].classList.add('light');
+  }
+  function yellow() {
+    var lights = document.getElementsByTagName('div');
+    for (var i = 0; i < 3; i++) lights[i].classList.remove('light');
+    document.getElementsByClassName('yellow')[0].classList.add('light');
+  }
+
+  // callback-hell
+  // function go() {
+  //   green();
+  //   setTimeout(function () {
+  //     yellow();
+  //     setTimeout(function () {
+  //       red();
+  //       setTimeout(function () {
+  //         go();
+  //       }, 5000);
+  //     }, 2000);
+  //   }, 10000);
+  // }
+
+  // promise.all 
+  // race竞争关系，多个promise，并行执行，一个完毕则并行完毕。
+
+
+  // return new promise 实际上也是一种async
+  function sleep(t) {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, t); // 执行resolve，才认为promise结束，才调用then
+    });
+  }
+
+  // function go() {
+  //   green();
+  //   sleep(1000).then(() => {
+  //     yellow();
+  //     return sleep(2000); // resolve执行完，return另一个promise函数，使其链式调用。
+  //   }).then(() => {
+  //     red();
+  //     return sleep(5000);
+  //   }).then(go);
+  // }
+
+  function happen(element, eventName) {
+    return new Promise((resolve, reject) => {
+      // 这里：触发事件之后 ---> 执行resolve ---> await。 等待的状态。
+      element.addEventListener(eventName, resolve, { once: true });
+    })
+  }
+
+  // 做成秒针
+  
+  async function go() {
+    while(true) {
+      green();
+      await happen(document.getElementById('next'), 'click');
+      yellow();
+      await happen(document.getElementById('next'), 'click');
+      red();
+      await happen(document.getElementById('next'), 'click');
+    }
+  }
+
+  /* 
+    generator
+    async generator
+    for await of 
+   */
+  async function* counter() {
+    let i = 0;
+    while(true) {
+      await sleep(1000);
+      yield i++;
+    }
+  }
+
+  // 异步操作 ---> 使用while true 表示无限循环的任务队列。 最佳实践
+
+  (async function() {
+    for await(let v of counter()) {
+      console.log(v); // 0, 1, 2, 3 ... 
+    }
+  })();
+
+  go();
+</script>
+</html>
