@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  /* Positioning, Box model, Typog, Visual, Misc */
+  .cell {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    vertical-align: middle;
+
+    line-height: 100px;
+    font-size: 50px;
+    text-align: center; /* 居中 */
+    background-color: green;
+    border: solid 1px white;
+    color: white;
+  }
+</style>
+<body>
+  <div id="board"></div>
+</body>
+<script>
+  // 断点，单步执行，查看渲染过程。
+
+  // 二维数组： 三种状态 0，1, 2
+  let pattern = [
+    [2, 0, 0],
+    [0, 1, 0],
+    [0, 0, 0],
+  ];
+
+  // 绘制棋盘
+  function show() {
+    let board = document.getElementById('board'); // 获取挂载节点
+
+    board.innerHTML = ''; // 重置
+    
+    for (let i = 0; i < 3; i++) {
+      // 一行的渲染
+      for (let j = 0; j < 3; j++) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+
+        // 映射数组内容0,1,2 ---> x,o,''
+        cell.innerText = 
+          pattern[i][j] === 2 ? 'x' : 
+          (pattern[i][j] === 1 ? 'o' : ''); // 嵌套的三元运算符
+
+        cell.addEventListener('click', () => move(j, i)); // 注意： let 作用域循环都被保留下来！  var需要ife
+        board.appendChild(cell);
+      }
+      board.appendChild(document.createElement('br')); // 换行
+    }
+  }
+
+  let color = 1; // 全局变量 
+
+  function move(x, y) {
+    pattern[y][x] = color; // 注意顺序
+    if (check(pattern, color)) {
+      alert(color == 2 ? 'x is winner!' : 'o is winner!');
+      // return;
+    }
+    color = 3 - color;
+    show(); // 重新渲染
+    if (willWin(pattern, color)) {
+      console.log(color === 2 ? 'x will win!' : 'o will win!');
+    }
+  }
+
+  // 判断赢了。 几种情况 跟外部变量无关的纯函数
+  function check(pattern, color) {
+
+    // 三行
+    for (let i = 0; i < 3; i++) {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] !== color) {
+          win = false; // 点击的那行，是否有其他内容(包含空格)。有就为false
+        }
+      }
+      if (win) return true;
+    }
+
+    // 三列
+    for (let i = 0; i < 3; i++) {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][i] !== color) {
+          win = false; // 点击的那行，是否有其他内容(包含空格)。有就为false
+        }
+      }
+      if (win) return true;
+    }
+
+    // 斜向两种情况 [j][2-j]  [j][j].  注意：{  } 更清晰的局部作用域。
+    {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][2 -j] !== color) {
+          win = false;
+        }
+      }
+      if (win) return true;
+    }
+
+    {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[j][j] !== color) {
+          win = false;
+        }
+      }
+      if (win) return false;
+    }
+
+    return false;
+  }
+
+  // 克隆一份 创建新实例
+  function clone(pattern) {
+    return JSON.parse(JSON.stringify(pattern));
+  }
+
+  function willWin(pattern, color) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j]) continue;// 不空有内容，直接跳过
+
+        // 空位置，直接执行这一步，然后去check，如果成功则返回true
+        let tmp = clone(pattern);
+        tmp[i][j] = color;
+        if (check(tmp, color)) {
+          return true;
+        }
+        
+      }
+    }
+    return false;
+  }
+
+  show(pattern);
+
+  // console.log(pattern);
+</script>
+</html>
