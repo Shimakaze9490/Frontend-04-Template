@@ -6,5 +6,6 @@ TicTacToe
 
 vertical-align: middle;
 
+arr[i][j] ---> arr[i * n + j]
 
-
+break outer;
