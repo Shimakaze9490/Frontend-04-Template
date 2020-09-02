@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>week_02</title>
+</head>
+<body>
+  <style>
+    #container {
+      /* width: 701px; */
+      box-sizing: border-box;
+      width: 600px;
+    }
+    .cell {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      line-height: 6px; /* 注意；要加上， 标准模式可能有问题？ */
+      background-color: gray;
+      border-bottom: solid 1px white;
+      border-right: solid 1px white;
+      vertical-align: middle;
+    }
+  </style>
+  <div class="container" id='container'></div>
+  <button onclick='localStorage["map"] = JSON.stringify(map)'>save</button>
+  <script>
+
+    // 读取缓存。
+    let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
+
+    // 最外层容器。
+    let container = document.getElementById('container');
+
+    for (let y = 0; y < 100; y++) {
+      for (let x = 0; x < 100; x++) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+
+        // 有墙用1表示；无墙用0表示
+        /* 技巧：使用一维数组来表示二维数组 [100 * y + x] 同余 */
+        if (map[100 * y + x] === 1) {
+          cell.style.backgroundColor = 'black';
+        }
+
+        /* mouse 按住鼠标移动。 */
+        cell.addEventListener('mousemove', () => {
+          if (mousedown) {
+            // clear用来区分，左键还是右键，
+            if (clear) {
+              cell.style.backgroundColor = '';
+              map[100 * y + x] = 0;
+            } else {
+              cell.style.backgroundColor = 'black'; // 视觉变成墙
+              map[100 * y + x] = 1; // 逻辑上处理。
+            }
+          }
+        });
+        container.appendChild(cell);
+      }
+    };
+
+    let mousedown = false;
+    let clear = false;
+
+    // 按下鼠标，触发mousedown
+    document.addEventListener('mousedown', e => {
+      mousedown = true;
+      clear = (e.which === 3);
+    });
+
+    // 松开鼠标，关闭mousedown
+    document.addEventListener('mouseup', () => mousedown = false);
+
+    // contextmenu是浏览器默认右键事件。
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    function path(map, start, end) {
+      
+    }
+  </script>
+</body>
+</html>
