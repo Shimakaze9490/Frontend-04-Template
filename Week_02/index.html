@@ -8,11 +8,12 @@
 <body>
   <style>
     #container {
-      /* width: 701px; */
+      width: 701px;
       box-sizing: border-box;
-      width: 600px;
+      /* width: 600px; */
     }
     .cell {
+      margin: 0;
       display: inline-block;
       width: 6px;
       height: 6px;
@@ -76,9 +77,55 @@
     // contextmenu是浏览器默认右键事件。
     document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    function path(map, start, end) {
-      
+
+    function sleep(t) {
+      return new Promise(function(resolve) {
+        setTimeout(resolve, t);
+      })
     }
+
+    // 寻路算法
+    async function path(map, start, end) {
+      // 数组：栈，队列
+      // 注意：每项，单位是个坐标 eg.  [5, 21]
+      let queue = [start]; 
+      // console.log(queue);
+
+      async function insert(x, y) {
+        /* 边缘case */
+        if (x < 0 || x >= 100 || y < 0 || y >= 100) return; // 遇到地图边，什么也不做
+        if (map[y * 100 + x]) return; // 有墙 map[y * 100 + x] === 1 或者 2
+
+        await(30);
+        container.children[y * 100 + x].style.backgroundColor = 'lightgreen';
+
+        // 标记 0 --> 2, 找过的点，避免重复
+        map[y * 100 + x] = 2;
+
+        queue.push([x, y]); // 入队
+      }
+
+      // 队列长度
+      while(queue.length) {
+        let [x, y] = queue.shift(); // 取出队列中的第一个元素
+        console.log(x, y);
+        if (x === end[0] && y === end[1]) {
+          // console.log(x, y);
+          return true; // 最终end终点
+        }
+
+        // 上下左右
+        await insert(x - 1, y);
+        await insert(x, y - 1);
+        await insert(x + 1, y);
+        await insert(x, y + 1);
+      }
+
+      return false;
+    }
+
+    path(map, [0, 0], [50, 50]);
+    // console.log();
   </script>
 </body>
 </html>
