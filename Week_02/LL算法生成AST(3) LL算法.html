@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LL算法</title>
+  </head>
+  <body>
+    <div></div>
+    <script>
+      /* 
+    四则运算：
+    TokenNumber: 0~9 .
+    Operator: + - * /
+    Whitespace: <SP>
+    LineTerminator: <LF> <CR>
+
+    考虑优先级：嵌套结构 () 括号
+    使用递归处理嵌套。
+
+    词法分析
+
+    EOF 表示源代码结束。
+    */
+
+      // 正则()表示捕获；g表示全局；。 | 表示匹配其中一种情况。
+      // 四种情况： 数字； 空白(空格，tab符)；换行符（\n, \r）；计算符号
+      let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+
+      // 字典：查询匹配的基础。
+      let dictionary = [
+        "Number",
+        "Whitespace",
+        "LineTerminator",
+        "*",
+        "/",
+        "+",
+        "-",
+      ]; // 共7种
+
+      // 生成器函数： iterator, 会在第一个yield时返回。
+      function* tokenize(source) {
+        // source = '1024 + 10 * 25'
+        let result = null;
+        let lastIndex = 0; //
+        while (true) {
+          lastIndex = regexp.lastIndex;
+          // result = Array(8);
+          result = regexp.exec(source);
+
+          if (!result) break; // 直到result = undefined;
+          if (regexp.lastIndex - lastIndex > result[0].length) break; // 长度如果超出，说明存在，字典外里面的字符。
+
+          // token 结构保存
+          let token = {
+            type: null,
+            value: null,
+          };
+
+          for (let i = 1; i <= dictionary.length; i++) {
+            if (result[i]) token.type = dictionary[i - 1];
+          }
+          token.value = result[0];
+
+          yield token; // 可以使用回调函数吐出token，更好的方式是js新特性：yield 返回一个序列
+        }
+
+        // 作为结束的标记EOF
+        yield {
+          type: "EOF",
+        };
+      }
+
+      let source = [];
+
+      for (let token of tokenize("1024 + 10 * 25")) {
+        if (token.type !== "Whitespace" && token.type !== "LineTerminator")
+          source.push(token); // 有效内容push进队列
+      }
+
+      // 表达式， 把EOF合并进来，最后生成一个单根。
+      // 完整将四则表达式解析。
+      function Expression(source) {
+        if (
+          source[0].type == "AddtiveExpression" &&
+          source[1] &&
+          source[1].type == "EOF"
+        ) {
+          let node = {
+            type: "Expression",
+            children: [source.shift(), source.shift()],
+          };
+          source.unshift(node);
+          return node;
+        }
+        AddtiveExpression(source);
+        return Expression(source);
+      }
+
+      // 注意：我们把一次单独的乘法，也看成特殊的加法（0次的加法），发生一次递归。
+      function AddtiveExpression(source) {
+        if (source[0].type == "MutiplicativeExpression") {
+          let node = {
+            type: "AddtiveExpression",
+            children: [source[0]],
+          };
+          source[0] = node;
+          return AddtiveExpression(source);
+        }
+        if (
+          source[0].type == "AddtiveExpression" &&
+          source[1] &&
+          (source[1].type == "+" || source[1].type == "-")
+        ) {
+          let node = {
+            type: "AddtiveExpression",
+            operator: source[1].type,
+            children: [],
+          };
+          node.children.push(source.shift());
+          node.children.push(source.shift());
+
+          // 特别注意：这里需要将source非终结符处理掉
+          MutiplicativeExpression(source); // number
+          node.children.push(source.shift());
+          source.unshift(node);
+          return AddtiveExpression(source);
+        }
+        if (source[0].type == "AddtiveExpression") {
+          return source[0];
+        }
+
+        // 遇到不认识的内容，先调用一次，在return 重新调用
+        MutiplicativeExpression(source);
+        return AddtiveExpression(source);
+      }
+
+      function MultiplicativeExpression(source) {
+        // 数字
+        if (source[0].type === "Number") {
+          // 新数据结构
+          let node = {
+            type: "MultiplicativeExpression",
+            children: [source[0]],
+          };
+          source[0] = node;
+          return MultiplicativeExpression(source); // 递归调用
+        }
+
+        // *
+        if (
+          source[0].type === "MultiplicativeExpression" &&
+          source[1] &&
+          source[1].type === "*"
+        ) {
+          let node = {
+            type: "MultiplicativeExpression",
+            operator: "*",
+            children: [],
+          };
+
+          // 前三项依次弹出，将node放入sourc。 三项一合并
+          node.children.push(source.shift());
+          node.children.push(source.shift());
+          node.children.push(source.shift());
+
+          source.unshift(node);
+          return MultiplicativeExpression(source);
+        }
+
+        // /
+        if (
+          source[0].type === "MultiplicativeExpression" &&
+          source[1] &&
+          source[1].type === "/"
+        ) {
+          let node = {
+            type: "MultiplicativeExpression",
+            operator: "/",
+            children: [],
+          };
+          node.children.push(source.shift());
+          node.children.push(source.shift());
+          node.children.push(source.shift());
+          source.unshift(node);
+          return MultiplicativeExpression(source);
+        }
+
+        // 递归结束条件。
+        if (source[0].type === "MultiplicativeExpression") return source[0]; // 说明处理完乘法。
+
+        // 前面应该包含所有的情况，这个return应该永远不执行
+        return MultiplicativeExpression(source);
+      }
+
+      MultiplicativeExpression(source);
+    </script>
+  </body>
+</html>

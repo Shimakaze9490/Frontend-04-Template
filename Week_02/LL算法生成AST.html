@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LL算法</title>
+</head>
+<body>
+  <div></div>
+  <script>
+    /* 
+    四则运算：
+    TokenNumber: 0~9 .
+    Operator: + - * /
+    Whitespace: <SP>
+    LineTerminator: <LF> <CR>
+
+    考虑优先级：嵌套结构 () 括号
+    使用递归处理嵌套。
+
+    词法分析
+
+    EOF 表示源代码结束。
+    */
+
+    // 正则()表示捕获；g表示全局；。 | 表示匹配其中一种情况。
+    // 四种情况： 数字； 空白(空格，tab符)；换行符（\n, \r）；计算符号
+    let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+
+    let dictionary = ['Number', 'Whitespace', 'LineTerminator', '*', '/', '+', '-']; // 共7种
+
+    function tokenize(source) { // source = '1024 + 10 * 25'
+      let result = null; 
+      while(true) {
+
+        // result = Array(8); 
+        result = regexp.exec(source);
+
+        if (!result) break; // 直到result = undefined;
+
+        for (let i = 1; i<= dictionary.length; i++) {
+          if (result[i]) console.log(dictionary[i-1]);
+        }
+        console.log(result);
+      }
+    }
+
+    tokenize('1024 + 10 * 25');
+  </script>
+</body>
+</html>

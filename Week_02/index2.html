@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>week_02</title>
+  <style>
+    #container {
+      width: 701px;
+      box-sizing: border-box;
+      /* width: 600px; */
+      font-size: 0;
+    }
+    .cell {
+      margin: 0;
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      /* line-height: 6px; 注意；要加上， 标准模式可能有问题？ */
+      background-color: gray;
+      border-bottom: solid 1px white;
+      border-right: solid 1px white;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id='container'></div>
+  <button onclick='localStorage["map"] = JSON.stringify(map)' style='font-size: 20px;'>save</button>
+  <script>
+
+    // 读取缓存。
+    // 注意：localStorage存的是字符串，读取后需要JSON.parse转换成对象。
+    let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
+
+    // 最外层容器。
+    let container = document.getElementById('container');
+
+    
+    for (let y = 0; y < 100; y++) {
+      for (let x = 0; x < 100; x++) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+
+        // 格子内容：0表示为空，1表示为墙
+        /* 技巧：使用一维数组来表示二维数组 [100 * y + x] 同余 */
+
+        /* 注意: 外层循环是y，里层循环是x， 意味着 y执行1次，x执行100次，于是生成了一行。 */
+        if (map[100 * y + x] === 1) {
+          cell.style.backgroundColor = 'black'; // 墙的颜色
+        }
+
+        /* mouse 鼠标移动。实时响应的事件，当鼠标指针的位置发生变化时（至少移动一个像素），就会触发 mousemove 事件。 */
+        cell.addEventListener('mousemove', (e) => {
+          // 做个实验，输出坐标
+          // console.log(e.offsetX, e.offsetY);
+          // console.log(e.pageX, e.pageY);
+          // console.log(e.screenX, e.screenY);
+
+          // 当前移动：是按住鼠标移动，还是松开鼠标移动，添加一个flag判断：mousedown
+          if (mousedown) {
+            // clear用来区分，左键还是右键。
+            if (clear) {
+              cell.style.backgroundColor = '';
+              map[100 * y + x] = 0;
+            } else {
+              cell.style.backgroundColor = 'black'; // 视觉变成墙
+              map[100 * y + x] = 1; // 逻辑上处理。
+            }
+          }
+        });
+
+        // 依次添加到容器里面
+        container.appendChild(cell);
+      }
+    };
+
+    let mousedown = false;
+    let clear = false;
+
+    // 按下鼠标，触发mousedown
+    document.addEventListener('mousedown', e => {
+      mousedown = true;
+      clear = (e.which === 3); // e.which 按键码  3表示右键
+    });
+
+    // 松开鼠标，关闭mousedown
+    document.addEventListener('mouseup', () => mousedown = false);
+
+    // contextmenu是浏览器默认右键事件。
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    function sleep(t) {
+      return new Promise(function(resolve) {
+        setTimeout(resolve, t);
+      })
+    }
+
+    // 寻路算法
+    async function path(map, start, end) {
+      // 数组：栈，队列
+      // 注意：每项，单位是个坐标 eg.  [5, 21]
+      let queue = [start]; 
+
+      // push, pop 变成深度优先
+
+      // console.log(queue);
+
+      async function insert(x, y) {
+        /* 边缘case */
+        if (x < 0 || x >= 100 || y < 0 || y >= 100) return; // 遇到地图边，什么也不做
+        if (map[y * 100 + x]) return; // 有墙 map[y * 100 + x] === 1 或者 2
+
+        await(30);
+        container.children[y * 100 + x].style.backgroundColor = 'lightgreen';
+
+        // 标记 0 --> 2, 找过的点，避免重复
+        map[y * 100 + x] = 2;
+
+        queue.push([x, y]); // 入队
+      }
+
+      // 队列长度
+      while(queue.length) {
+        let [x, y] = queue.shift(); // 取出队列中的第一个元素
+        console.log(x, y);
+        if (x === end[0] && y === end[1]) {
+          // console.log(x, y);
+          return true; // 最终end终点
+        }
+
+        // 上下左右
+        await insert(x - 1, y);
+        await insert(x, y - 1);
+        await insert(x + 1, y);
+        await insert(x, y + 1);
+      }
+
+      return false;
+    }
+
+    // path(map, [0, 0], [50, 50]);
+    // console.log();
+  </script>
+</body>
+</html>
