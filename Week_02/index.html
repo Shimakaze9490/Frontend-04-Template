@@ -8,7 +8,7 @@
     * {
       margin:0;
       padding:0;
-      font-size: 0; /*div 之间有间隙的处理办法*/
+      font-size: 0; /*div 之间有间隙的处理办法, 或者设置margin,padding为0 display: flex; */
     }
     body {
       text-align: center;
@@ -34,19 +34,27 @@
   <div id="container"></div>
   <button onclick='localStorage["map"] = JSON.stringify(map)' style='font-size: 20px; color:springgreen; margin: 0 auto;'>save</button>
   <script>
+
+    // json字符串转换成json对象
     let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
     let container = document.getElementById('container');
+
+    // 全局变量都挂载都window上
     let mouse_down = false;
     let clear = false;
+
+    let frag = document.createDocumentFragment(); // 虚拟节点,文档碎片,减少重绘
+
+    // y执行一次为一行,x要执行40次,填满一行
     for (let y = 0; y < 40; y++) {
       for (let x = 0; x < 40; x++) {
         let cell = document.createElement('div');
-        cell.classList.add('cell');
+        cell.classList.add('cell'); 
 
         if (map[100 * y + x] === 1) cell.style.backgroundColor = 'green';
 
         cell.addEventListener('mousemove', (e) => {
-          // console.log(x, y); // 可以输出坐标
+          // console.log(x, y); // 可以输出坐标,感受下
           if (mouse_down) {
             if (clear) {
               cell.style.backgroundColor = '';
@@ -57,10 +65,13 @@
             }
           }
         });
-
-        container.appendChild(cell);
+        // container.appendChild(cell);
+        frag.appendChild(cell);
       }
     }
+
+    // 再将容器挂载到html文档上, 仅引起一次重绘
+    container.appendChild(frag);
 
     document.addEventListener('mousedown', (e) => {
       mouse_down = true;
@@ -69,7 +80,7 @@
 
     document.addEventListener('mouseup', () => mouse_down = false);
 
-    // contextmenu是浏览器默认右键事件。
+    // contextmenu是浏览器默认右键事件,弹出菜单。
     document.addEventListener('contextmenu', (e) => e.preventDefault());
 
   </script>

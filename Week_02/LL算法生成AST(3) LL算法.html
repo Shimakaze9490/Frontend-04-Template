@@ -44,12 +44,16 @@
         let result = null;
         let lastIndex = 0; //
         while (true) {
-          lastIndex = regexp.lastIndex;
+   /*        lastIndex从字面上来讲就是最后一个索引，实际上它的意思是正则表达式开始下一次查找的索引位置，第一次的时候总是为0的，
+          第一次查找完了的时候会把lastIndex的值设为匹配到得字符串的最后一个字符的索引位置加1，第二次查找的时候会从lastIndex这个位置开始，后面的以此类推。 */
+          lastIndex = regexp.lastIndex; // 类比正则表达式里面的lastIndex
           // result = Array(8);
+
+          // 返回一个数组，其中存放匹配的结果。如果未找到匹配，则返回值为 null。
           result = regexp.exec(source);
 
           if (!result) break; // 直到result = undefined;
-          if (regexp.lastIndex - lastIndex > result[0].length) break; // 长度如果超出，说明存在，字典外里面的字符。
+          if (regexp.lastIndex - lastIndex > result[0].length) break; // 长度如果超出，说明存在，字典外的字符。
 
           // token 结构保存
           let token = {
@@ -75,7 +79,7 @@
 
       for (let token of tokenize("1024 + 10 * 25")) {
         if (token.type !== "Whitespace" && token.type !== "LineTerminator")
-          source.push(token); // 有效内容push进队列
+          source.push(token); // 过滤掉空白字符,有效内容push进队列
       }
 
       // 表达式， 把EOF合并进来，最后生成一个单根。
@@ -93,6 +97,8 @@
           source.unshift(node);
           return node;
         }
+
+        // 递归调用
         AddtiveExpression(source);
         return Expression(source);
       }

@@ -36,7 +36,7 @@
 
     // 最外层容器。
     let container = document.getElementById('container');
-
+    let frag = document.createDocumentFragment();
     
     for (let y = 0; y < 100; y++) {
       for (let x = 0; x < 100; x++) {
@@ -72,9 +72,12 @@
         });
 
         // 依次添加到容器里面
-        container.appendChild(cell);
+        // container.appendChild(cell);
+        frag.appendChild(cell);
       }
     };
+
+    container.appendChild(frag);
 
     let mousedown = false;
     let clear = false;
@@ -99,7 +102,7 @@
 
     // 寻路算法
     async function path(map, start, end) {
-      // 数组：栈，队列
+      // 数组：栈，队列. 队列是先进先出,栈实先进后出
       // 注意：每项，单位是个坐标 eg.  [5, 21]
       let queue = [start]; 
 
@@ -127,9 +130,10 @@
         console.log(x, y);
         if (x === end[0] && y === end[1]) {
           // console.log(x, y);
-          return true; // 最终end终点
+          return true; // 最终end终点,仅能表示能否找到,没有获取更多的信息.
         }
 
+        // 这里是个递归调用,往四周扩散的过程,就是 广度优先
         // 上下左右
         await insert(x - 1, y);
         await insert(x, y - 1);

@@ -36,6 +36,8 @@
   <script>
     let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
     let container = document.getElementById('container');
+    let frag = document.createDocumentFragment();
+
     let mouse_down = false;
     let clear = false;
     for (let y = 0; y < 40; y++) {
@@ -58,9 +60,12 @@
           }
         });
 
-        container.appendChild(cell);
+        // container.appendChild(cell);
+        frag.appendChild(cell);
       }
     }
+
+    container.appendChild(frag);
 
     document.addEventListener('mousedown', (e) => {
       mouse_down = true;
