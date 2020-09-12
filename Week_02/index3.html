@@ -36,7 +36,7 @@
 
     // 最外层容器。
     let container = document.getElementById('container');
-
+    let frag = document.createDocumentFragment();
     
     for (let y = 0; y < 100; y++) {
       for (let x = 0; x < 100; x++) {
@@ -72,9 +72,12 @@
         });
 
         // 依次添加到容器里面
-        container.appendChild(cell);
+        // container.appendChild(cell);
+        frag.appendChild(cell);
       }
     };
+
+    container.appendChild(frag);
 
     let mousedown = false;
     let clear = false;
@@ -130,6 +133,8 @@
           return true; // 最终end终点
         }
 
+        // async await 将异步代码,用同步方法写出来. 一般配合返回promise实例对象
+        // await 返回promise成功的值,错误的值需要try...catch捕获
         // 上下左右
         await insert(x - 1, y);
         await insert(x, y - 1);
