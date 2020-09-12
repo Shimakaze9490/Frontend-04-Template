@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // let $ = symbol('$');
+    class Trie {
+      $ = Symbol('$');
+      constructor() {
+        this.root = Object.create(null); // 保存树状结构： Object， Map
+      }
+
+      // 传入word字符串
+      insert(word) {
+        let node = this.root;
+        for (let c of word) { // for...of 遍历数组
+
+          // 子树不存在，先创建子树
+          if (!node[c]) node[c] = Object.create(null);
+          node = node[c];
+        }
+
+        // 截止符(每个字符串都以$作为结束)
+        if (!(this.$ in node)) node[this.$] = 0;
+
+        node[this.$] ++;
+      }
+
+      most() {
+        let max = 0;
+        let maxWord = null;
+
+        let visit = (node, word) => {
+
+          // 当前节点存在， 找到了结束符
+          if (node[this.$] && node[this.$] > max) {
+            max = node[this.$]; // 记录最后出现的次数
+            maxWord = word; // 记录该单词字符串
+          }
+          for (let p in node) { // for...in 遍历对象
+
+            // 递归调用visit
+            visit(node[p], word + p);
+          }
+        }
+
+        // 入口，传入''
+        visit(this.root, '');
+        console.log(maxWord, max);
+      }
+    }
+
+    function randomWord(length) {
+      let s = '';
+      for (let i = 0; i < length; i++) {
+        // 字符 <-----> ASCII码 相互转换   String.fromCharCode  str.charCodeAt()
+        s += String.fromCharCode(Math.random() * 26 + 'a'.charCodeAt(0)); // a的ASCII码为 65
+      }
+      return s;
+    }
+
+    let trie = new Trie(); // 实例化
+
+    for (let i = 0; i < 10 ** 4; i ++) {
+      trie.insert(randomWord(2));
+    }
+    // console.log(trie.root);
+    trie.most()
+  </script>
+</body>
+</html>

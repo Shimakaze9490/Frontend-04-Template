@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /* 
+      whildCard: ab*c?d*abc*a?d
+      只有*: ab*cd*abc*d
+      只有?: c?d a?b
+
+      简化
+
+      *不确定最高： 任意个数任意字符。
+
+      前面星号尽量少匹配，最后一个星号尽量多匹配
+
+      中间一组：一个星号+一个字符串 ----> kmp算法
+
+      若干kmp，正则exec
+     */
+
+      // 首先找到星号的个数，知道最后一个星号
+      function find(source, pattern) {
+        let starCount = 0;
+        for (let i = 0; i < pattern.length; i++) {
+          if (pattern[i] === "*") {
+            starCount++;
+          }
+        }
+
+        // 没有星号的边界情况, 严格一一匹配
+        if (starCount === 0) {
+          for (let i = 0; i < pattern.length; i++) {
+            if (pattern[i] !== source[i] && pattern[i] !== "?") return false;
+          }
+          return;
+        }
+
+        // 处理前面星号
+        let i = 0;
+        let lastIndex = 0;
+        for (i = 0; pattern[i] !== "*"; i++) {
+          if (pattern[i] !== source[i] && pattern[i] !== "?") return false;
+        }
+
+        lastIndex = i;
+
+        for (let p = 0; p < starCount - 1; p++) {
+          i++;
+          let subPattern = ""; // 星号后的格式
+          while (pattern[i] !== "*") {
+            subPattern += pattern[i];
+            i++;
+          }
+
+          let reg = new RegExp(subPattern.replace(/\?/g, "[\\s\\S]"), "g"); // 问号替换成任意字符 \s \S 互补
+          reg.lastIndex = lastIndex; // 正则的lastIndex属性，匹配的位置。从哪个字符开始
+
+          // console.log(reg.exec(source));
+
+          if (!reg.exec(source)) return false; // 没有匹配到
+
+          lastIndex = reg.lastIndex;
+        }
+
+        // 从后往前匹配
+        for (
+          let j = 0;
+          j <= source.length - lastIndex && pattern[pattern.length - j] !== "*";
+          j++
+        ) {
+          if (
+            pattern[pattern.length - j] !== source[source.length - j] &&
+            pattern[pattern.length - j] !== "*"
+          ) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      console.log(find("abcabcabxaac", "a*b*bx*c"));
+      console.log(find("abcabcabxaac", "a*b*b?x*c"));
+    </script>
+  </body>
+</html>

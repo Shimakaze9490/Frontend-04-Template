@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /* 
+      proxy强大却危险：使得业务代码预计性变差 ，只用于底层库
+     */
+
+      // 不可observe，不可观察的数据
+      let object = {
+        a: 1,
+        b: 2,
+      };
+
+      // Object.defineProperty ---> proxy
+
+      let po = new Proxy(object, {
+        // 设置属性值的时候触发, 即时访问对象上没有的属性，也会触发
+        // prop是访问的属性'a'
+
+        // 有大量的内置方法，去拦截修改对象和属性!  hook函数
+        set(obj, prop, val) {
+          console.log(obj, prop, val);
+        },
+      });
+    </script>
+  </body>
+</html>

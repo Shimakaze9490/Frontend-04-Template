@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 模式匹配： A字符串（原串，长串） 里面是否有B字符串（pattern，短串）
+
+      // BF(Brute-force) 暴力匹配 O(m*n)
+
+      // 关注字符串自重复行为。
+
+      // 逐个截断，找出公共最长子串
+
+      // 标记当前重复字符个数，'KMP回退表格'
+
+      function kmp(source, pattern) {
+        // 计算table跳转表格
+        let table = new Array(pattern.length).fill(0);
+        // abcdabce -->
+
+        // 局部作用域
+        {
+          // 自重复,每一位查看上一位为止，匹配了多少位
+          let i = 1,
+            j = 0;
+          while (i < pattern.length) {
+            if (pattern[i] === pattern[j]) {
+              j++, i++;
+              table[i] = j;
+            } else {
+              // j = 0;
+              if (j > 0) {
+                j = table[j];
+              } else {
+                // table[i] = j;
+                ++i; // 没匹配上
+              }
+            }
+          }
+        }
+
+        {
+          let i = 0,
+            j = 0;
+          while (i < source.length) {
+            // if (j === pattern.length) return true; // 匹配到头了
+
+            // 匹配上了
+            if (pattern[j] === source[i]) {
+              ++i, j++;
+            } else {
+              // 没匹配上，就倒退table标记的位置
+              if (j > 0) j = table[j];
+              else ++i;
+            }
+
+            // 判断自增后的j
+            if (j === pattern.length) return true;
+          }
+          // source到头了，跳出while循环，说明没匹配上
+          return false;
+        }
+      }
+
+      console.log(kmp("Hello", "ll"));
+      console.log(kmp("abcdabcdabcex", "abcdabce"));
+      console.log(kmp("aabaabaaacx", "aabaaac"));
+      console.log(kmp("abc", "abc"));
+    </script>
+  </body>
+</html>

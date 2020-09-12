@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let object = {
+        a: { c: 123 },
+        b: 2,
+      };
+      let callbacks = new Map(); // object作为key
+
+      let reactivties = new Map(); // 每个加个缓存保留reactive结果
+
+      let usedReactivties = []; // 依赖收集的容器
+
+      function effect(callback) {
+        // callbacks.push(callback); // 新增监听
+        usedReactivties = [];
+        callback();
+        // console.log(usedReactivties);
+        for (let reactivity of usedReactivties) {
+          // 防御性代码：防止多次重复注册
+          // key判断
+          if (!callbacks.has(reactivity[0])) {
+            callbacks.set(reactivity[0], new Map());
+          }
+          // 属性值判断
+          if (!callbacks.get(reactivity[0]).has(reactivity[1])) {
+            callbacks.get(reactivity[0]).set(reactivity[1], []);
+          }
+
+          callbacks.get(reactivity[0]).get(reactivity[1]).push(callback);
+        }
+      }
+
+      // 无状态的函数，执行完即释放，
+      function reactive(object) {
+        if (reactivties.has(object)) return reactivties.get(object);
+        let proxy = new Proxy(object, {
+          get(obj, prop) {
+            // console.log(obj, prop);
+
+            if (typeof obj[prop] === 'object') return reactive(obj[prop]); // 递归监听，深层对象
+
+            usedReactivties.push([obj, prop]); // 依赖收集
+            return obj[prop];
+          },
+          set(obj, prop, val) { // 派发更新
+            console.log(obj, prop, val); // 修改前后，对象属性变化
+            obj[prop] = val;
+            console.log(obj, prop, val);
+            // for (let callback of callbacks) callback(); // 依次调用回调函数
+            if(callbacks.get(obj) && callbacks.get(obj).get(prop)) {
+              for (let callback of callbacks.get(obj).get(prop)) callback();
+            }
+
+            return obj[prop]; // set最后也返回该属性！便于操作
+          },
+        });
+
+        reactivties.set(object, proxy);
+      }
+
+      // js里面，没有任何办法，获取一个函数他能访问到的所有变量,也没有任何数据结构表示
+      // 调用一下这个函数，看下它实际用了哪些变量,如果引用了reactive变量，就用get去代理
+
+      let reactive_po = reactive(object);
+
+      effect(() => {
+        console.log(reactive_po.a.c); // 添加监听，等待触发
+      });
+
+      reactive_po.a.c = 999;
+
+      // 监听对象上的属性，代替事件监听。
+ 
+    </script>
+  </body>
+</html>
