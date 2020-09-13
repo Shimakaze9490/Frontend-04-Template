@@ -13,43 +13,44 @@
      */
 
       // 不可observe，不可观察的数据
-      let object = {
+      let name = {
         a: 1,
         b: 2,
       };
+      let po = reactive(name);
 
-      // Object.defineProperty ---> proxy
+      let callbacks = [];
+      function effect(callback) {
+        callbacks.push(callback);
+      }
 
-      let po = new Proxy(object, {
-        // 设置属性值的时候触发, 即时访问对象上没有的属性，也会触发
-        // prop是访问的属性'a'
-
-        // 有大量的内置方法，去拦截修改对象和属性!  hook函数
-        set(obj, prop, val) {
-          console.log(obj, prop, val);
-        },
+      // 执行回调函数,代替事件监听
+      effect(() => {
+        console.log(po.a);
       });
 
-      let reactive_po = reactive(object);
 
-      reactive_po.a = 4;
-      reactive_po.x = 999;
+      po.a = 4; // 赋值,调用set方法
+      // po.x = 999; // 新增的属性,也会调用set方法
 
-      // 函数对象的proxy
-
-      function reactive(object) {
-        return new Proxy(object, {
-          /* 处理这两个，还有十多个hook需要去拦截代理 eg. apply, construct defineProperty deleteProperty has ownKeys */
-          set(obj, prop, val) {
-            console.log(obj, prop, val); // 修改前后，对象属性变化
-            obj[prop] = val;
-            console.log(obj, prop, val);
-
-            return obj[prop]; // set最后也返回该属性！便于操作
-          },
+      // proxy封装一层再用
+      function reactive(obj) {
+        return new Proxy(obj, {
           get(obj, prop) {
-            console.log(obj, prop);
+            // console.log(obj, prop);
             return obj[prop];
+          },
+          /* 处理这两个，还有十多个hook需要去拦截代理 
+            eg. apply, construct defineProperty deleteProperty has ownKeys */
+
+          // obj是绑定的对象; prop是key; val是新值
+          set(obj, prop, val) {
+            // 遍历并执行所有注册的回调函数
+            for (let cb of callbacks) cb();
+            // console.log(obj[prop]); // 对比前后修改的值!  x从 undefined --> 999
+            obj[prop] = val;
+            // console.log(obj[prop]);
+            return obj[prop]; // set最后也返回该属性！便于操作
           },
         });
       }
