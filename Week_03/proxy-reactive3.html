@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="range" id='r' min=0 max=255>
+    <input type="range" id='g' min=0 max=255>
+    <input type="range" id='b' min=0 max=255>
+    <div id='color' style="height: 50px; width: 50px; border: solid 1px red;"></div>
+    <script>
+      /* 
+      proxy强大却危险：使得业务代码预计性变差 ，只用于底层库
+      reactive 使用proxy实现
+     */
+
+      // 不可observe，不可观察的数据
+      let name = {
+        r: 1,
+        g: 1,
+        b: 1,
+        a: { c: 3 },
+        b: 2,
+      };
+      
+
+      // let callbacks = [];
+      let callbacks = new Map();
+      let Dep = []; // usedReactivvties 收集依赖.
+
+      let Vuex = new Map(); // 每个对象缓存,保持状态. 全局状态管理!!!  类似于Vuex, 因为reactive无状态,每次执行完就释放.
+      // console.log(Vuex);
+
+      let po = reactive(name);
+
+      function effect(cb) {
+        // callbacks.push(cb);
+
+        Dep = []; // 重制
+        cb();
+        /* ---收集到引用-- */
+
+        // 使用map结构,因为key是object,找到Dep
+        // 所以理解,为什么要用Map, 每个obj作为唯一的key,绑定对应的Dep,不会互相调用,提高性能
+        for (let r of Dep) {
+          // 防止重复注册
+          // 注意: 以下所有 r[0] 代表obj对象, r[1] 代表prop属性. 因为push进来的是一个 [obj, prop]
+          if (!callbacks.has(r[0])) {
+            callbacks.set(r[0], new Map());
+          }
+
+          if (!callbacks.get(r[0]).has(r[1])) {
+            callbacks.get(r[0]).set(r[1], []);
+          }
+
+          callbacks.get(r[0]).get(r[1]).push(cb);
+        }
+      }
+
+      // 执行回调函数,代替事件监听
+
+
+      effect(() => {
+        document.getElementById('r').value = po.r;
+      });
+      effect(() => {
+        document.getElementById('g').value = po.g;
+      });
+      effect(() => {
+        document.getElementById('b').value = po.b;
+      });
+
+      effect(() => {
+        // console.log(po.a.c);
+        // document.getElementById('r').value = po.r;
+        // document.getElementById('g').value = po.g;
+        // document.getElementById('b').value = po.b;
+
+        document.getElementById('color').style.color = `rgb(${po.r}, ${po.g}, ${po.b})`;
+      });
+
+      document.getElementById('r').addEventListener('input', event => po.r = event.target.value)
+      document.getElementById('g').addEventListener('input', event => po.g = event.target.value)
+      document.getElementById('b').addEventListener('input', event => po.b = event.target.value)
+
+      po.a = 4; // 赋值,调用set方法
+      // po.x = 999; // 新增的属性,也会调用set方法
+
+      // reactive 无状态,所以每次调用都是一样的.
+      function reactive(obj) {
+        // console.log(Vuex);
+        // debugger;
+        if (Vuex.has(obj)) {
+          return Vuex.get(obj);
+        }
+
+        let proxy = new Proxy(obj, {
+          // 如何判断引用了该变量: 在get里面进行 ‘依赖收集’ !!
+          get(obj, prop) {
+            Dep.push([obj, prop]);
+
+            // 如果获取的prop是个对象,需要套一层
+            if (typeof obj[prop] === "object") {
+              return reactive(obj[prop]); // 递归调用,深度监听
+            }
+            return obj[prop];
+          },
+          /* 处理这两个，还有十多个hook需要去拦截代理 
+            eg. apply, construct defineProperty deleteProperty has ownKeys */
+
+          // obj是绑定的对象; prop是key; val是新值
+          set(obj, prop, val) {
+            // 遍历并执行所有注册的回调函数
+            // for (let cb of callbacks) cb();
+
+            if (callbacks.get(obj) && callbacks.get(prop)) {
+              for (let cb of callbacks.get(obj).get(prop)) {
+                cb();
+              }
+            }
+
+            // console.log(obj[prop]); // 对比前后修改的值!  x从 undefined --> 999
+            obj[prop] = val;
+            // console.log(obj[prop]);
+            return obj[prop]; // set最后也返回该属性！便于操作
+          },
+        });
+
+        Vuex.set(obj, proxy);
+
+        return proxy;
+      }
+
+      /* 
+        Vue 3.0 
+        reactivity, 半成品的双向绑定, 数据到dom元素监听.
+
+       */
+    </script>
+  </body>
+</html>

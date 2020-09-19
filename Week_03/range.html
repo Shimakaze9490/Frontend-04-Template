@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id='container'>
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+      文字文字文字文字文字文字文字文字文字文字文字文字
+    </div>
+    <div
+      id="dragable"
+      style="width: 100px; height: 100px; background-color: pink; display: inline-block;"
+    ></div>
+    <script>
+      /* 
+      正常文本流中的拖拽
+     */
+
+      let dragable = document.getElementById("dragable");
+
+      let baseX = 0, baseY = 0; // 用来缓存上一次结束位置
+
+      //原生 drag drop事件
+
+      // mousedown mousemove mouseup 模拟
+
+      // 按下鼠标才算开始. 可以使用flag来判断,但是需要多执行一遍方法,所以卸载mousedown里面
+      dragable.addEventListener('mousedown', (e1) => {
+        // console.log('Dowm');
+
+        let startX = e1.clientX;
+        let startY = e1.clientY;
+
+        /* 千万注意: 这里区分e1, e2 两个事件对象, 获取的clientX 不同的 */
+        let up = (e2) => {
+          baseX = baseX + e2.clientX - startX; // ??
+          baseY = baseY + e2.clientY - startY;
+
+          console.log(baseX, baseY);
+          // console.log('Up');
+          document.removeEventListener('mousemove', move);
+          document.removeEventListener('mouseup', up);
+        };
+        let move = (e2) => {
+          // console.log('Move');
+          // dragable.style.transform = `translate(${baseX + e2.clientX - startX}px, ${baseY + e2.clientY - startY}px)`;
+          let range = getNearest(e2.clientX, e2.clientY);
+          range.insertNode(dragable); // 默认移除之前的元素
+        }
+        // 在document上面监听, 如果使用dragable,移出范围就无效了
+        document.addEventListener('mousemove', move);
+        document.addEventListener('mouseup', up);
+      });
+
+      let ranges = [];
+      let container = document.getElementById('container');
+      // 文本长度
+      for (let i = 0; i < container.childNodes[0].textContent.length; i++ ) {
+        let range = document.createRange();
+        range.setStart(container.childNodes[0], i);
+        range.setEnd(container.childNodes[0], i);
+
+        // cssom的api
+        console.log(range.getBoundingClientRect());
+        ranges.push(range);
+      }
+
+      function getNearest(x, y) {
+        let min = Infinity;
+        let nearset = null;
+        for (let r of ranges) {
+          let rect = r.getBoundingClientRect(); // 动态变化的,实时获取
+          let distance = (rect.x - x) ** 2 + (rect.y - y) ** 2;
+          if (distance < min) {
+            nearset = r;
+            min = distance;
+          }
+        }
+
+        return nearset;
+      }
+
+      // 禁止选中的默认事件
+      document.addEventListener('selectstart', e => e.preventDefault());
+    </script>
+  </body>
+</html>
