@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- 
+    泛用语言分类方法
+      非形式语言：没有固定语法顺序组织，自由发挥
+      形式语言：形式化定义，一套标准规范；（乔姆斯基谱系），4类
+
+
+    产生式：巴克斯-诺尔范式（BNF）
+      基础结构称终结符（Terminal Symbol） 树的叶子节点， 字符串
+      复合结构称终结符（Noterminal Symbol）
+
+      引号和中间的字符表示终结符，可以有引号，
+      * 表示重复多次
+      | 表示或
+      + 表示至少一次
+
+
+    js大体是上下文无关文法；
+    表达式大多为正则文法。两个特例： 2 ** 1 ** 2 (右结合)并不是正则文法
+    {
+      get a { return 1 }
+      get: 1 // 这里就是上下文相关
+    }
+
+    数据描述语言： JSOn，HTML，XAML，SQL，CSS
+    编程语言： Javascript，C++
+
+    声明式语言：JSON，HTML，CSS，Lisp，Haskell（函数式语言）
+    命令型语言：C++，JS
+
+
+    图灵完备性：
+    图灵机--图灵完备，
+    命令式（goto, if while）
+    声明式(lambda函数 递归) 
+
+    动态：
+    在用户设备/在线服务器
+    产品实际运行时
+    Runtime
+
+    静态：
+    在程序员的设备
+    产品开发时
+    Compiletime （js没有这个编译过程，webpack仅仅是打包代码）
+
+    类型系统：
+    动态类型，静态类型
+    强类型，弱类型（js动态 String + Number String == Boolean）
+    复合类型(结构体，函数签名)
+    
+    逆变：凡是能用 Array(Parent) => Array(Child)
+    协变：凡是能用 Function(Child) => Function(Parent)0
+
+    泛型： 逆变，协变
+
+    原子(Atom) > 表达式(Expression) > 状态(Statement) > 结构(Structure) > 程序(Program)
+   -->
+</body>
+</html>
