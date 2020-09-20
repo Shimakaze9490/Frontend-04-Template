@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /* 
+      行为改变状态的原则
+
+      顶级父类： Object / null(Nihilo)
+
+      原型认知成本低，修改成本低
+
+      抽象程度： 为代码服务
+
+      提取共性，行为+状态
+
+      class 和 type 两回事
+
+
+      js对象两个要素： Property(属性)； [[Prototype]](原型) !!不要搞混了
+
+      对象唯一性： 内存地址
+
+      属性： （Symbol String 唯一值） --> Data, Accessor()
+
+      Symbol创建后，只能通过引用去使用，无法创建两个完全一样的Symbol（实现私有属性，权限控制）
+
+      值：数据属性，访问器属性(getter, setter)
+
+      描述符： enumerable / configurable / writable
+
+      基本的对象机制： {} . [] Object.defineProperty
+      基于原型的描述对象的方法： Object.create Object.setPrototypeOf Object.getPrototypeOf
+      基于分类的方法： new class extends
+      历史包袱(es3 建议不用): new function prototype
+
+
+      Function Object 特殊对象：
+      Object[[call]]
+
+      Function 带[[call]]方法的对象
+
+      [[call]] 内置行为 Function
+      [[length]] Array
+      [[setPrototypeOf]] Object.prototype
+
+      Host Object 宿主对象
+     */
+
+  </script>
+</body>
+</html>

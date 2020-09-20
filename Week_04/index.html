@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <!-- 
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
     泛用语言分类方法
       非形式语言：没有固定语法顺序组织，自由发挥
       形式语言：形式化定义，一套标准规范；（乔姆斯基谱系），4类
@@ -21,6 +21,20 @@
       | 表示或
       + 表示至少一次
 
+
+      在双引号中的字("word")代表着这些字符本身。而double_quote用来代表双引号。
+      在双引号外的字（有可能有下划线）代表着语法部分。
+      尖括号( < > )内包含的为必选项。
+      方括号( [ ] )内包含的为可选项。
+      大括号( { } )内包含的为可重复0至无数次的项。
+      竖线( | )表示在其左右两边任选一项，相当于"OR"的意思。
+      ::= 是“被定义为”的意思。
+
+
+      巴科斯-诺尔形式(Backus-Naur form)。它不仅能严格地表示语法规则，而且所描述的语法是与上下文无关的。它具有语法简单，
+      表示明确，便于语法分析和编译的特点。BNF表示语法规则的方式为：非终结符用尖括号括起。每条规则的左部是一个非终结符，
+      右部是由非终结符和终结符组成的一个符号串，中间一般以“：：=”分开。具有相同左部的规则可以共用一个左部，各右部之间以直竖“|”隔开
+      
 
     js大体是上下文无关文法；
     表达式大多为正则文法。两个特例： 2 ** 1 ** 2 (右结合)并不是正则文法
@@ -63,5 +77,5 @@
 
     原子(Atom) > 表达式(Expression) > 状态(Statement) > 结构(Structure) > 程序(Program)
    -->
-</body>
+  </body>
 </html>
