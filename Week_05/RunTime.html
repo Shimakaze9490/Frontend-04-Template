@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /* 
+      运行时:
+      Grammer语法
+      Runtime: Completion Record 返回值
+      Lexical Environment 作用域
+
+      Completion Record 类型. 完成的记录:
+
+      js无法访问到真正的数据
+
+      [[type]]: normal, break, continue, return, or throw
+      [[value]]: 基本类型
+      [[target]]: label
+
+      return continue break
+
+      
+      简单语句:表达式语句, 空语句, debugger, Throw抛出异常, continue, break, return
+
+      复合语句: blockStatement{}, if, switch, Iteration遍历器, with, label(配上遍历器), Try, 
+
+      声明语句 7种: function(4种形态), Generator, Async, Variable, Class, Lexical
+
+
+      Function很特殊:4种形态 
+      
+      function 普通函数
+      function * 就是Generator声明
+      async function 就是异步函数声明
+      async function * 异步的产生器
+      
+      FunctionDeclaration
+      GeneratorDeclaration
+      AsyncFunctionDeclaration
+      AsyncGeneratorDeclaration
+      VariableStatement (既有声明作用,又能执行计算) 声明+语句
+      ClassDeclaration
+      LexicalDeclaration  let + const
+
+      作用范围,一行行依次执行:  Function Body: function function* async function async function* var
+
+      声明没有先后关系
+
+      var出现在首部,先声明,但是还没有赋值(预处理时)  undefined
+
+      (pre-process)预处理机制(执行前): 函数是一等公民;提升到顶部. return后的声明也有效 
+
+      ** 所有的声明都是有预处理机制的, 在声明前使用会报错
+
+
+
+      作用域: 作用域链 来自于早期标准
+
+
+      var 变量提升 作用域
+      var 函数级作用域
+      let/const 块级作用域 {} block块状 if for try catch 
+
+
+      Grammer: 简单语句 组合语句 声明
+
+      Runtime: Completion Record  Lexical Environment
+
+     */
+    </script>
+  </body>
+</html>

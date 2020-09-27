@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /* 
+      类型转换
+      a+b 两个数字,两个字符串
+
+      ‘false’ == false  // false 因为 非空字符串转换为true
+
+      a[o] = 1; // 对象key,如果加入数字,会自动转换为字符串 1 -> '1'
+
+      '   ' == false // true 因为当作空字符串
+
+      
+      Number(undefined) 得到NaN
+      String(undefined) 得到‘undefined’
+
+
+      null undefined 无法转换成Object,所以不存在装箱转换
+
+      Object转换成number,调用valueOf方法
+      Object转换成string,调用valueOf,然后调用toString
+
+      Symbol无法转换为其他类型,只能Boxing装箱转换.
+
+
+      拆箱转换(Unboxing);
+      ToPremitive 表达式定义的方方面面, 涉及到Object运算的
+      对象上有三个方法的定义影响到ToPremitive: toString valueOf Symbol.ToPrimitive
+
+      toString vs valueOf
+      执行顺序不同,
+
+
+      装箱转换:
+      构造器
+      new Number(1) --> 1
+      new String('a') --> 'a'
+      new Boolean(true) --> true
+      new Object(Symbol('a')) --> Symbol('a')
+
+
+      StringToNumber
+      NumberToString
+
+      
+     */
+  </script>
+</body>
+</html>

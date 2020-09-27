@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /* 
+      宏任务: 宿主传给js引擎的任务(最大力度的任务)
+
+      微任务: js内部产生的任务(只有Promise能够产生微任务)
+
+      JS Engine
+
+      Promise + then 两个异步微任务,合并称为一个: MicroTask(Job).就是一个宏任务!
+
+      一个宏任务,包含多个微任务
+
+
+      事件循环(event loop):  wait --> get code --> execute --> wait ...
+
+      独立的线程执行, 等待一个‘锁’
+
+      
+      宏任务,微任务 会影响执行顺序: 微任务 先于 宏任务
+
+      函数执行顺序,控制访问哪些变量
+
+      Stack数据结构
+
+      压栈 --> 弹栈 (一帧: Execution Context 执行上下文)
+
+      Execution Context Stack 执行上下文栈
+
+      当前访问的,一定是栈顶的元素.  Running Execution Context 
+
+      执行所需的所有信息
+
+      Execution Context 包括7个大件: 没有齐全的
+      1. code evaluation state  用于async generator 函数
+      2. Function  
+      3. Script or Module  二选一 上下文模块
+      4. Generator  
+      5. Realm  内置对象的领域
+      6. LexicalEnvironment  访问保存变量的环境
+      7. VariableEnvironment  var声明变量
+
+
+      2018以后
+      LexicalEnvironment: this  new.target(obj) super 声明的变量
+
+      VariableEnvironment  仅处理var声明变量 (历史遗留包袱),
+      大多数两者相同
+      出现在eval + var
+      with { a: 1 }
+
+      Environment Record 链式结构,继承关系, 5个成员
+
+      Declarative Environment Record 
+
+
+      Function-Closure 在js中每个函数都会生成一个闭包 !!
+
+      闭包包含两部分: 代码, 环境(object, 变量的序列).  延伸了变量的使用范围,使函数空间,无法释放
+
+
+
+      Realm: 函数表达式,对象直接量均会创建对象. 数组
+
+      隐式转换也会创建对象.  装箱转换
+
+      需要有原型,指向哪个对象, 在iframe创建对象,原型是不一样的.
+
+      Realm 内置对象放入其中, 不同Realm完全独立, 所以instanceof可能失效,
+
+      G6: JavaScript 实现的图可视化引擎
+      https://www.yuque.com/mo-college/beginner-tutorial/nxvgl6
+
+    */
+  </script>
+</body>
+</html>
