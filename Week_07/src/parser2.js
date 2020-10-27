@@ -1,7 +1,6 @@
 const EOF = Symbol('EOF');// EOF: End of File. 唯一性
 const css = require('css')
 
-
 let currentToken = null
 let currentAttribute = null
 let currentTextNode = null

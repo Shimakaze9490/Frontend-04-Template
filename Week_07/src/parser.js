@@ -7,14 +7,7 @@ let currentTextNode = null
 let stack = [{ type: 'document', children: [] }]
 let rules = []
 
-/**
- * p[0]:内联样式，如: style="..."，权值为1000。
- * p[1]:ID选择器，如：#content，权值为0100。
- * p[2]类.，伪类:、属性选择器[]，如.content，权值为0010。
- * p[3]类型选择器.、伪元素选择器::，如div p，权值为0001。
- * 通配符*、子选择器>、相邻选择器+等。如* > +，权值为0000。
- * 继承的样式没有权值
- */
+
 
 // 优先级计算还是不好搞啊
 function specificity(selector) {
